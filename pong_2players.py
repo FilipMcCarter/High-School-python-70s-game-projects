@@ -4,7 +4,7 @@ pygame.init()
 
 x_size, y_size = 900, 600
 screen = x_size, y_size
-fps = 60
+fps = 20
 font20 = pygame.font.Font(None, 20) 
 
 pygame.display.set_caption("pong")
@@ -70,7 +70,6 @@ class Ball:
 
         if self.posy <= 0 or self.posy >= y_size - self.radius:
             self.yFac *= -1
-        self.speed += 0.001
         
     def reset(self):
         global point
@@ -78,7 +77,7 @@ class Ball:
         self.posy = y_size//2
         self.xFac = 1
         self.yFac = -1
-        self.speed = 3
+        self.speed = 7
         point = 0
         pygame.time.wait(1000)
 
@@ -102,21 +101,18 @@ class Ball:
 def main():
     running = True
 
-    score1, score2 = 0, 0
-    yFac1, yFac2 = 0, 0
-
     player1 = plate(20, y_size//2, 10, 100, 10, white)
     player2 = plate(x_size - 30, y_size//2, 10, 100, 10, white)
-    ball = Ball(x_size//2, y_size//2, 7, 3, white)
-    
+    ball = Ball(x_size//2, y_size//2, 7, 7, white)
 
     players = [player1, player2]
+
+    score1, score2 = 0, 0
+    yFac1, yFac2 = 0, 0
 
     while running:
         game_sc.fill(black)
         pygame.draw.line(game_sc, white, (x_size//2, 0), (x_size//2, y_size))
-        center1 = player1.posy + player1.height//2
-        vector =  ball.posy - center1
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -124,19 +120,18 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
                     yFac2 -= 1
-                elif event.key == pygame.K_DOWN:
+                if event.key == pygame.K_DOWN:
                     yFac2 += 1
-                
+                if event.key == pygame.K_w:
+                    yFac1 -= 1
+                if event.key == pygame.K_s:
+                    yFac1 += 1
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     yFac2 = 0
-        
-        if abs(vector) >= 50:
-             yFac1 = 1 if  vector >= 0 else -1
-        else:
-            yFac1 = 0
+                if event.key == pygame.K_w or event.key == pygame.K_s:
+                    yFac1 = 0
             
-
         for player in players:
             if pygame.Rect.colliderect(ball.getRect(), player.getRect()):
                 ball.hit()
